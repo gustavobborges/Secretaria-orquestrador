@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "nodemon": "^2.0.15",
+    "venom-bot": "^4.0.2"
+  },
+  "scripts": {
+    "start": "node src/index.js"
+  }
+}
