@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "express": "^4.17.1",
+    "http": "^0.0.1-security",
+    "puppeteer": "^10.0.0",
+    "venom-bot": "https://github.com/orkestral/venom/releases/download/nightly/venom-bot-nightly.tgz",
+    "wss": "^3.3.4"
+  },
+  "scripts": {
+    "start": "node src/index.js"
+  }
+}
