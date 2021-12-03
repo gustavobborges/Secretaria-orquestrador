@@ -22,17 +22,23 @@ venom
 function start(client) {
 
   client.onMessage((message) => {
+    console.log('banco.db', banco.db);
+
     const messageFrom = message.from;
     const db = Object.entries(banco.db);
     const clientSession = db.map((session) => {
-      const sessionValue = session[0]?.substring(5);
-      const messageFromValue = messageFrom?.substring(4);
+      const sessionValue = session[0];
+      const messageFromValue = messageFrom;
+      console.log('sessionValue', sessionValue); 
+      console.log('messageFromValue', messageFromValue); 
       if (sessionValue === messageFromValue) {
         return session[1];
       }
     });
-    if (message.body) { 
-      let resp = stages.step[getStage(message.from)].obj.execute(message.from, message.body, clientSession[0]?.appointmentId || '');
+    const stage = getStage(message.from)
+    console.log('stage', stage);
+    if (message.body && stage < 2) { 
+      let resp = stages.step[stage].obj.execute(message.from, message.body, clientSession[0]?.appointmentId || '');
       if (!clientSession.finished) {
         for (let index = 0; index < resp.length; index++) {
           const element = resp[index];
@@ -43,15 +49,15 @@ function start(client) {
   });
 
   app.route("/sendMessage")
-		.post(function (req, res) {
+		.post(function (req, res) {      
 			try {
         console.log(req.body);
-				const phone = '55' + req.body.phone + '@c.us';
+				const phone = '55' + req.body.phone.replace('9', '') + '@c.us';
 				const messageText = req.body.messageText;
         const appointmentId = req.body.appointmentId;
 				client.sendText(phone, messageText);
-        getStage(phone, appointmentId);
-
+        getStage(phone, appointmentId, true);
+        console.log('banco.db', banco.db);
 				res.json({
           messageSended: 'enviado!',
         });
@@ -61,12 +67,12 @@ function start(client) {
 		});
 }
 
-function getStage(user, appointmentId = null) {
-  if (banco.db[user]) {
+function getStage(user, appointmentId = null, reset = null) {
+  if (banco.db[user] && !reset) {
     return banco.db[user].stage
   }
-  
-  else {
+
+  if (!banco.db[user] || reset) {
     banco.db[user] = {
       stage: 0,
       appointmentId,

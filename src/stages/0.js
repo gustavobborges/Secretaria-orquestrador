@@ -7,14 +7,15 @@ function execute(user, msg, appointmentId = null) {
   console.log('execute!');
     if (msg === "1") {
       banco.db[user].stage = 1;
-
+      const date = new Date();
       const payload  = {
-        confirmationStatus: true,
-        confirmationResponsedDate: new Date()
+        response: "Confirmado",
+        date
       }
-      axios.post(`http://localhost:8000/appointment/messageResponse/${appointmentId}`, payload).then((response) => {
-        console.log(response);
-      })
+
+      const sendResponse = axios.post(`http://localhost:8000/appointment/messageResponse/${appointmentId}`, payload).then((response) => {
+          return response.data;
+      });
 
       return [
           "Consulta confirmada!"
