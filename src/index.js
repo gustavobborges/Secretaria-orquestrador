@@ -23,20 +23,16 @@ function start(client) {
 
   client.onMessage((message) => {
     console.log('banco.db', banco.db);
-
     const messageFrom = message.from;
     const db = Object.entries(banco.db);
     const clientSession = db.map((session) => {
       const sessionValue = session[0];
       const messageFromValue = messageFrom;
-      console.log('sessionValue', sessionValue); 
-      console.log('messageFromValue', messageFromValue); 
       if (sessionValue === messageFromValue) {
         return session[1];
       }
     });
     const stage = getStage(message.from)
-    console.log('stage', stage);
     if (message.body && stage < 2) { 
       let resp = stages.step[stage].obj.execute(message.from, message.body, clientSession[0]?.appointmentId || '');
       if (!clientSession.finished) {
@@ -51,13 +47,13 @@ function start(client) {
   app.route("/sendMessage")
 		.post(function (req, res) {      
 			try {
-        console.log(req.body);
+        console.log('req.body: ', req.body);
 				const phone = '55' + req.body.phone.replace('9', '') + '@c.us';
 				const messageText = req.body.messageText;
         const appointmentId = req.body.appointmentId;
 				client.sendText(phone, messageText);
         getStage(phone, appointmentId, true);
-        console.log('banco.db', banco.db);
+        console.log('banco.db: ', banco.db);
 				res.json({
           messageSended: 'enviado!',
         });
